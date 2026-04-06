@@ -557,6 +557,11 @@ export function renderParentForm() {
       delete payload.country_other;
       delete payload.city_other;
       saveParentApp(payload);
+      fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {}); // 이메일 실패가 신청 성공에 영향 없음
       currentStep = 'done';
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
