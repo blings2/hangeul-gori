@@ -64,27 +64,37 @@ ${goalsText}
 어드민 대시보드: https://hangeul-gori.vercel.app/#/admin
 `.trim();
 
-  try {
-    await Promise.all([
-      resend.emails.send({
-        from,
-        to:      email,
-        subject: `${child_name}의 선생님을 찾기 시작했어요 🌱`,
-        text:    parentEmailText,
-      }),
-      adminTo
-        ? resend.emails.send({
-            from,
-            to:      adminTo,
-            subject: `새 신청이 들어왔어요 — ${child_name}`,
-            text:    adminEmailText,
-          })
-        : Promise.resolve(),
-    ]);
+  const [parentResult, adminResult] = await Promise.allSettled([
+    resend.emails.send({
+      from,
+      to:      email,
+      subject: `${child_name}의 선생님을 찾기 시작했어요`,
+      text:    parentEmailText,
+    }),
+    adminTo
+      ? resend.emails.send({
+          from,
+          to:      adminTo,
+          subject: `새 신청이 들어왔어요 - ${child_name}`,
+          text:    adminEmailText,
+        })
+      : Promise.resolve({ status: 'skipped' }),
+  ]);
 
-    return res.status(200).json({ ok: true });
-  } catch (err) {
-    console.error('[send-email] Resend error:', err);
-    return res.status(500).json({ error: 'email_failed' });
+  if (parentResult.status === 'rejected') {
+    console.error('[send-email] parent email failed:', JSON.stringify(parentResult.reason));
+  } else {
+    console.log('[send-email] parent email sent:', JSON.stringify(parentResult.value));
   }
+
+  if (adminResult.status === 'rejected') {
+    console.error('[send-email] admin email failed:', JSON.stringify(adminResult.reason));
+  } else {
+    console.log('[send-email] admin email sent:', JSON.stringify(adminResult.value));
+  }
+
+  return res.status(200).json({
+    parent: parentResult.status,
+    admin:  adminResult.status,
+  });
 }
