@@ -16,7 +16,9 @@ export default async function handler(req, res) {
     learning_goal,
     country,
     city,
-    preferred_schedule,
+    available_days,
+    available_times,
+    local_timezone,
   } = req.body;
 
   const from    = process.env.FROM_EMAIL   || 'onboarding@resend.dev';
@@ -57,8 +59,10 @@ ${child_name}의 한글 수업 신청이 잘 접수되었어요.
 ${goalsText}
 
 ── 수업 일정 / 장소 ─────────────────
-거주지:          ${country}${city ? ` / ${city}` : ''}
-희망 수업 시간:  ${preferred_schedule}
+거주지:      ${country}${city ? ` / ${city}` : ''}
+희망 요일:   ${(available_days || []).join(', ')}
+희망 시간대: ${(available_times || []).join(' / ')}
+Timezone:    ${local_timezone || '-'}
 ────────────────────────────────────
 
 어드민 대시보드: https://hangeul-gori.vercel.app/#/admin

@@ -15,7 +15,9 @@ export function renderParentForm() {
     country_other: '',
     city: '',
     city_other: '',
-    preferred_schedule: '',
+    available_days: [],
+    available_times: [],
+    local_timezone: '',
     parent_name: '',
     child_name: '',
     email: '',
@@ -36,6 +38,25 @@ export function renderParentForm() {
     '기타':     [],
   };
 
+  const TIMEZONE_MAP = {
+    '미국':     { '뉴욕':'America/New_York', '로스앤젤레스':'America/Los_Angeles', '샌프란시스코':'America/Los_Angeles', '시애틀':'America/Los_Angeles', '시카고':'America/Chicago', '휴스턴':'America/Chicago', _default:'America/New_York' },
+    '캐나다':   { '토론토':'America/Toronto', '밴쿠버':'America/Vancouver', '몬트리올':'America/Toronto', _default:'America/Toronto' },
+    '영국':     { _default:'Europe/London' },
+    '호주':     { '시드니':'Australia/Sydney', '멜버른':'Australia/Melbourne', '브리즈번':'Australia/Brisbane', '퍼스':'Australia/Perth', _default:'Australia/Sydney' },
+    '뉴질랜드': { _default:'Pacific/Auckland' },
+    '독일':     { _default:'Europe/Berlin' },
+    '프랑스':   { _default:'Europe/Paris' },
+    '싱가포르': { _default:'Asia/Singapore' },
+    '일본':     { _default:'Asia/Tokyo' },
+    '기타':     { _default:'UTC' },
+  };
+
+  const getTimezone = (country, city) => {
+    const map = TIMEZONE_MAP[country];
+    if (!map) return 'UTC';
+    return (city && map[city]) || map._default || 'UTC';
+  };
+
   // ─── helpers ──────────────────────────────────────────────────────────────
 
   const canGoNext = () => {
@@ -46,7 +67,9 @@ export function renderParentForm() {
       const showCity       = formData.country && formData.country !== '기타';
       const cityOk         = (showCity && formData.city) || formData.country === '기타';
       const cityOtherOk    = formData.city !== '기타' || formData.city_other.trim();
-      return !!(formData.country && countryOtherOk && cityOk && cityOtherOk && formData.preferred_schedule.trim());
+      return !!(formData.country && countryOtherOk && cityOk && cityOtherOk
+        && formData.available_days.length > 0
+        && formData.available_times.length > 0);
     }
     return false;
   };
@@ -143,11 +166,20 @@ export function renderParentForm() {
   };
 
   const step3Html = () => {
-    const countries    = ['미국','캐나다','영국','호주','뉴질랜드','독일','프랑스','싱가포르','일본','기타'];
-    const cities       = formData.country && formData.country !== '기타' ? (CITY_MAP[formData.country] || []) : [];
+    const countries     = ['미국','캐나다','영국','호주','뉴질랜드','독일','프랑스','싱가포르','일본','기타'];
+    const cities        = formData.country && formData.country !== '기타' ? (CITY_MAP[formData.country] || []) : [];
     const showCtryOther = formData.country === '기타';
     const showCitySelect = !!(formData.country && formData.country !== '기타');
     const showCityOther  = formData.city === '기타';
+
+    const DAYS  = ['월','화','수','목','금','토','일'];
+    const TIMES = [
+      { value: '오전', label: '오전 (9–12시)' },
+      { value: '오후', label: '오후 (12–17시)' },
+      { value: '저녁', label: '저녁 (17–21시)' },
+    ];
+
+    const showHint = formData.available_days.length > 0 && formData.available_times.length > 0;
 
     return `
       <div class="ms-step-header">
@@ -187,11 +219,31 @@ export function renderParentForm() {
       </div>
 
       <div class="ms-field">
+        <label class="ms-label">희망 수업 요일</label>
+        <div class="ms-chips ms-chips-days">
+          ${DAYS.map(d => `
+            <div class="ms-chip ${formData.available_days.includes(d) ? 'selected' : ''}"
+                 data-field="available_days" data-value="${d}">${d}</div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="ms-field">
         <label class="ms-label">희망 수업 시간대</label>
-        <input class="ms-input" id="preferred_schedule" type="text"
-          placeholder="예: 주말 오전, 평일 오후 3시 이후…"
-          value="${formData.preferred_schedule}" />
-        <p class="ms-hint">입력하신 시간은 한국 시간 기준으로 변환되어 선생님과 매칭됩니다</p>
+        <div class="ms-chips ms-chips-row">
+          ${TIMES.map(t => `
+            <div class="ms-chip ${formData.available_times.includes(t.value) ? 'selected' : ''}"
+                 data-field="available_times" data-value="${t.value}">
+              <span class="ms-chip-check">✓</span>${t.label}
+            </div>
+          `).join('')}
+        </div>
+        ${showHint ? `
+          <p class="ms-hint" style="margin-top:6px;">
+            선택하신 시간은 현지 시간 기준이에요.<br/>
+            한국 시간으로 변환하여 선생님과 매칭됩니다.${formData.local_timezone ? ` (${formData.local_timezone})` : ''}
+          </p>
+        ` : ''}
       </div>
 
       <div class="ms-btn-row">
@@ -411,9 +463,14 @@ export function renderParentForm() {
           font-size: 14px; color: var(--primary-dark); line-height: 1.65; font-weight: 500;
         }
 
-        /* Chips row (horizontal for short options like gender) */
+        /* Chips row (horizontal for short options like gender / times) */
         .ms-chips-row { flex-direction: row; }
         .ms-chips-row .ms-chip { flex: 1; justify-content: center; }
+
+        /* Day chips — compact horizontal grid */
+        .ms-chips-days { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+        .ms-chips-days .ms-chip { flex: 0 0 auto; min-width: 44px; padding: 10px 8px; justify-content: center; font-size: 14px; font-weight: 700; }
+        .ms-chips-days .ms-chip .ms-chip-check { display: none; }
 
         /* Done screen */
         .ms-done { text-align: center; padding: 8px 0 8px; }
@@ -466,6 +523,12 @@ export function renderParentForm() {
           idx > -1 ? formData.learning_goal.splice(idx, 1) : formData.learning_goal.push(value);
         } else if (field === 'child_gender') {
           formData.child_gender = formData.child_gender === value ? '' : value;
+        } else if (field === 'available_days') {
+          const idx = formData.available_days.indexOf(value);
+          idx > -1 ? formData.available_days.splice(idx, 1) : formData.available_days.push(value);
+        } else if (field === 'available_times') {
+          const idx = formData.available_times.indexOf(value);
+          idx > -1 ? formData.available_times.splice(idx, 1) : formData.available_times.push(value);
         }
         render();
       });
@@ -483,12 +546,13 @@ export function renderParentForm() {
     const elGoalNote = container.querySelector('#learning_goal_note');
     if (elGoalNote) elGoalNote.addEventListener('input', e => { formData.learning_goal_note = e.target.value; });
 
-    // Select: country — reset city on change
+    // Select: country — reset city + recompute timezone
     const elCountry = container.querySelector('#country');
     if (elCountry) elCountry.addEventListener('change', e => {
       formData.country = e.target.value;
       formData.city = '';
       formData.city_other = '';
+      formData.local_timezone = getTimezone(formData.country, '');
       render();
     });
 
@@ -499,11 +563,12 @@ export function renderParentForm() {
       syncActionBtn();
     });
 
-    // Select: city
+    // Select: city — recompute timezone
     const elCity = container.querySelector('#city');
     if (elCity && !elCity.disabled) elCity.addEventListener('change', e => {
       formData.city = e.target.value;
       formData.city_other = '';
+      formData.local_timezone = getTimezone(formData.country, formData.city);
       render();
     });
 
@@ -511,13 +576,6 @@ export function renderParentForm() {
     const elCityOther = container.querySelector('#city_other');
     if (elCityOther) elCityOther.addEventListener('input', e => {
       formData.city_other = e.target.value;
-      syncActionBtn();
-    });
-
-    // Input: preferred_schedule
-    const elSchedule = container.querySelector('#preferred_schedule');
-    if (elSchedule) elSchedule.addEventListener('input', e => {
-      formData.preferred_schedule = e.target.value;
       syncActionBtn();
     });
 

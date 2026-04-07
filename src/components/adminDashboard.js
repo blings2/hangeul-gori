@@ -1,4 +1,5 @@
 import { getParentApps, getTeacherApps, updateParentStatus, updateTeacherStatus, updateAdminNote, getMatchByParentId, getTeacherById, saveMatchRecord } from './storage.js';
+import { convertToKST } from '../lib/convertToKST.js';
 
 export function renderAdminDashboard() {
   const container = document.createElement('div');
@@ -74,7 +75,26 @@ export function renderAdminDashboard() {
                   <p><strong>자녀정보:</strong> ${item.child_name || '-'} (${item.child_age || '-'})</p>
                   <p><strong>한글수준:</strong> ${item.korean_level}</p>
                   <p><strong>수업목표:</strong> ${item.learning_goal}</p>
-                  <p><strong>희망시간:</strong> ${item.preferred_schedule}</p>
+                  ${item.available_days?.length > 0 ? (() => {
+                    const kst = convertToKST(item.available_days, item.available_times || [], item.local_timezone || '');
+                    return `
+                      <div style="margin:8px 0;">
+                        <strong>희망 수업 시간</strong>
+                        <div style="display:flex; gap:16px; margin-top:6px;">
+                          <div style="flex:1;">
+                            <div style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:3px;">현지 시간</div>
+                            <div style="font-size:13px;">${item.available_days.join(', ')}</div>
+                            <div style="font-size:13px;">${(item.available_times || []).join(' / ')}</div>
+                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${item.local_timezone || ''}</div>
+                          </div>
+                          <div style="flex:1;">
+                            <div style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:3px;">한국 시간 (KST)</div>
+                            <div style="font-size:13px; line-height:1.7;">${kst.length ? kst.join('<br/>') : '-'}</div>
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  })() : `<p><strong>희망시간:</strong> ${item.preferred_schedule || '이전 형식'}</p>`}
                   ${item.note ? `<p style="margin-top:8px;"><strong>요청사항:</strong></p><div style="white-space: pre-wrap; background: var(--bg-color); padding: 8px; border-radius: 8px; margin-top:4px; font-size:13px;">${item.note}</div>` : ''}
                   
                   ${matchUI}
