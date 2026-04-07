@@ -5,6 +5,7 @@ export function renderParentForm() {
   container.className = 'page-container apply-multistep';
 
   let currentStep = 1; // 1 | 2 | 3 | 4 | 'done'
+  let _prevStep   = null; // fadeIn 트리거 조건용
   let formData = {
     child_age: '',
     korean_level: '',
@@ -82,9 +83,9 @@ export function renderParentForm() {
   // ─── step HTML builders ───────────────────────────────────────────────────
 
   const step1Html = () => {
-    const ages   = ['3세','4세','5세','6세','7세','8세','9세','10세'];
+    const ages     = ['3세','4세','5세','6세','7세','8세','9세','10세'];
     const ageLabel = a => `만 ${a}`;
-    const levels = [
+    const levels   = [
       '한국어를 거의 접해본 적이 없어요',
       '간단한 단어나 표현을 이해해요',
       '짧은 문장으로 말할 수 있어요',
@@ -166,19 +167,17 @@ export function renderParentForm() {
   };
 
   const step3Html = () => {
-    const countries     = ['미국','캐나다','영국','호주','뉴질랜드','독일','프랑스','싱가포르','일본','기타'];
-    const cities        = formData.country && formData.country !== '기타' ? (CITY_MAP[formData.country] || []) : [];
-    const showCtryOther = formData.country === '기타';
+    const countries      = ['미국','캐나다','영국','호주','뉴질랜드','독일','프랑스','싱가포르','일본','기타'];
+    const cities         = formData.country && formData.country !== '기타' ? (CITY_MAP[formData.country] || []) : [];
+    const showCtryOther  = formData.country === '기타';
     const showCitySelect = !!(formData.country && formData.country !== '기타');
     const showCityOther  = formData.city === '기타';
-
     const DAYS  = ['월','화','수','목','금','토','일'];
     const TIMES = [
       { value: '오전', label: '오전 (9–12시)' },
       { value: '오후', label: '오후 (12–17시)' },
       { value: '저녁', label: '저녁 (17–21시)' },
     ];
-
     const showHint = formData.available_days.length > 0 && formData.available_times.length > 0;
 
     return `
@@ -239,9 +238,9 @@ export function renderParentForm() {
           `).join('')}
         </div>
         ${showHint ? `
-          <p class="ms-hint" style="margin-top:6px;">
+          <p class="ms-hint ms-hint-tz">
             선택하신 시간은 현지 시간 기준이에요.<br/>
-            한국 시간으로 변환하여 선생님과 매칭됩니다.${formData.local_timezone ? ` (${formData.local_timezone})` : ''}
+            한국 시간으로 변환하여 선생님과 매칭됩니다.
           </p>
         ` : ''}
       </div>
@@ -255,8 +254,8 @@ export function renderParentForm() {
   };
 
   const step4Html = () => {
-    const genderOptions    = ['남자아이', '여자아이'];
-    const referralOptions  = ['인스타그램/SNS', '지인 소개', '검색(구글·네이버 등)', '커뮤니티/카페', '기타'];
+    const genderOptions   = ['남자아이', '여자아이'];
+    const referralOptions = ['인스타그램/SNS', '지인 소개', '검색(구글·네이버 등)', '커뮤니티/카페', '기타'];
     return `
       <div class="ms-step-header">
         <h1 class="ms-title">매칭을<br/>시작할게요</h1>
@@ -330,17 +329,13 @@ export function renderParentForm() {
     </div>
   `;
 
-  // ─── main render ──────────────────────────────────────────────────────────
+  // ─── init: 스켈레톤 1회 생성 ─────────────────────────────────────────────
 
-  const render = () => {
-    const pct = currentStep === 'done' ? 100 : Math.round((currentStep / 4) * 100);
-
+  const init = () => {
     container.innerHTML = `
       <style>
-        /* Override page-container padding */
         .apply-multistep { padding: 0 !important; background: var(--bg-color); }
 
-        /* Top bar */
         .ms-top-bar { display: flex; align-items: center; padding: 20px 20px 0; }
         .ms-back-home {
           background: var(--surface); border: 1px solid var(--border);
@@ -351,7 +346,6 @@ export function renderParentForm() {
         }
         .ms-back-home:hover { background: var(--secondary); }
 
-        /* Progress bar */
         .ms-progress-wrap { padding: 20px 20px 0; }
         .ms-progress-label { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
         .ms-progress-track { height: 6px; background: var(--secondary); border-radius: 3px; overflow: hidden; }
@@ -361,26 +355,23 @@ export function renderParentForm() {
           transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Form card */
+        /* 카드: animation은 JS에서 step 전환 시에만 수동 트리거 */
         .ms-form-card {
           margin: 20px 16px 40px;
           background: var(--surface); border-radius: var(--radius-lg);
           padding: 28px 24px 32px;
           box-shadow: var(--shadow-sm); border: 1px solid var(--border);
-          animation: fadeIn 0.35s ease backwards;
         }
+        .ms-form-card.ms-fade { animation: fadeIn 0.35s ease both; }
 
-        /* Step header */
         .ms-step-header { margin-bottom: 28px; }
         .ms-title { font-size: 24px; font-weight: 800; color: var(--primary-dark); line-height: 1.35; letter-spacing: -0.5px; }
 
-        /* Fields */
         .ms-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
         .ms-label { font-size: 14px; font-weight: 700; color: var(--primary-dark); }
         .ms-optional { font-weight: 400; color: var(--text-muted); font-size: 13px; }
-        .ms-hint { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-top: 2px; }
+        .ms-hint { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 2px; }
 
-        /* Inputs */
         .ms-select, .ms-input {
           font-family: var(--font-kr); font-size: 16px;
           padding: 14px 16px; width: 100%;
@@ -405,31 +396,24 @@ export function renderParentForm() {
           box-shadow: 0 0 0 4px rgba(163,130,106,0.1);
         }
 
-        /* Chips */
         .ms-chips { display: flex; flex-direction: column; gap: 10px; }
         .ms-chip {
           display: flex; align-items: center; gap: 10px;
           padding: 14px 16px; border-radius: var(--radius-md);
           border: 1.5px solid var(--border); background: var(--bg-color);
           color: var(--text-main); font-size: 14px; font-weight: 500;
-          cursor: pointer; transition: var(--transition); user-select: none;
+          cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; user-select: none;
         }
         .ms-chip:active { transform: scale(0.985); }
-        .ms-chip.selected {
-          border-color: var(--primary); background: #faf4f0;
-          color: var(--primary-dark); font-weight: 700;
-        }
+        .ms-chip.selected { border-color: var(--primary); background: #faf4f0; color: var(--primary-dark); font-weight: 700; }
         .ms-chip-check {
           flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
           border: 1.5px solid var(--border); background: var(--surface);
           display: flex; align-items: center; justify-content: center;
-          font-size: 11px; color: transparent; transition: var(--transition);
+          font-size: 11px; color: transparent; transition: background 0.15s, border-color 0.15s, color 0.15s;
         }
-        .ms-chip.selected .ms-chip-check {
-          background: var(--primary); border-color: var(--primary); color: white;
-        }
+        .ms-chip.selected .ms-chip-check { background: var(--primary); border-color: var(--primary); color: white; }
 
-        /* Slide-in for 기타 inputs */
         .ms-slide-in {
           max-height: 0; overflow: hidden; opacity: 0;
           transition: max-height 0.35s cubic-bezier(0.25,0.8,0.25,1), opacity 0.3s ease;
@@ -437,7 +421,6 @@ export function renderParentForm() {
         .ms-slide-in.visible { max-height: 70px; opacity: 1; }
         .ms-slide-in .ms-input { margin-top: 8px; }
 
-        /* Buttons */
         .ms-btn-next {
           width: 100%; padding: 16px; border: none; border-radius: var(--radius-md);
           background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -455,7 +438,6 @@ export function renderParentForm() {
         .ms-btn-back:hover { background: var(--secondary); }
         .ms-btn-row { display: flex; gap: 12px; margin-top: 8px; }
 
-        /* Transition card (step 4 top banner) */
         .ms-transition-card {
           background: linear-gradient(135deg, #fdf6f0, #faf0e8);
           border: 1px solid var(--secondary); border-radius: var(--radius-md);
@@ -463,16 +445,13 @@ export function renderParentForm() {
           font-size: 14px; color: var(--primary-dark); line-height: 1.65; font-weight: 500;
         }
 
-        /* Chips row (horizontal for short options like gender / times) */
         .ms-chips-row { flex-direction: row; }
         .ms-chips-row .ms-chip { flex: 1; justify-content: center; }
 
-        /* Day chips — compact horizontal grid */
         .ms-chips-days { flex-direction: row; flex-wrap: wrap; gap: 8px; }
         .ms-chips-days .ms-chip { flex: 0 0 auto; min-width: 44px; padding: 10px 8px; justify-content: center; font-size: 14px; font-weight: 700; }
         .ms-chips-days .ms-chip .ms-chip-check { display: none; }
 
-        /* Done screen */
         .ms-done { text-align: center; padding: 8px 0 8px; }
         .ms-done-icon {
           width: 72px; height: 72px; border-radius: 50%;
@@ -487,24 +466,50 @@ export function renderParentForm() {
       <div class="ms-top-bar">
         <a href="#/" class="ms-back-home">←</a>
       </div>
-
-      ${currentStep !== 'done' ? `
-        <div class="ms-progress-wrap">
-          <div class="ms-progress-label">4단계 중 ${currentStep}단계</div>
-          <div class="ms-progress-track">
-            <div class="ms-progress-fill" style="width:${pct}%"></div>
-          </div>
+      <div class="ms-progress-wrap" id="ms-progress-wrap">
+        <div class="ms-progress-label" id="ms-progress-label"></div>
+        <div class="ms-progress-track">
+          <div class="ms-progress-fill" id="ms-progress-fill" style="width:0%"></div>
         </div>
-      ` : ''}
-
-      <div class="ms-form-card">
-        ${currentStep === 1    ? step1Html()
-        : currentStep === 2   ? step2Html()
-        : currentStep === 3   ? step3Html()
-        : currentStep === 4   ? step4Html()
-        : doneHtml()}
       </div>
+      <div class="ms-form-card" id="ms-card"></div>
     `;
+  };
+
+  // ─── render: progress 값 patch + card innerHTML만 교체 ────────────────────
+
+  const render = () => {
+    const isDone = currentStep === 'done';
+
+    // Progress bar — 값만 in-place 업데이트 (DOM 재생성 없음)
+    const progressWrap  = container.querySelector('#ms-progress-wrap');
+    const progressLabel = container.querySelector('#ms-progress-label');
+    const progressFill  = container.querySelector('#ms-progress-fill');
+    if (progressWrap) {
+      progressWrap.style.display = isDone ? 'none' : '';
+      if (!isDone) {
+        progressLabel.textContent = `4단계 중 ${currentStep}단계`;
+        progressFill.style.width  = `${Math.round((currentStep / 4) * 100)}%`;
+      }
+    }
+
+    // Form card — innerHTML만 교체, card 엘리먼트 자체는 유지
+    const card = container.querySelector('#ms-card');
+    if (card) {
+      card.innerHTML = isDone ? doneHtml()
+        : currentStep === 1 ? step1Html()
+        : currentStep === 2 ? step2Html()
+        : currentStep === 3 ? step3Html()
+        : step4Html();
+
+      // fadeIn은 step이 바뀔 때만 트리거 (같은 step 내 입력 시 실행 안 함)
+      if (_prevStep !== currentStep) {
+        card.classList.remove('ms-fade');
+        void card.offsetWidth; // reflow → animation 재시작 강제
+        card.classList.add('ms-fade');
+        _prevStep = currentStep;
+      }
+    }
 
     attachListeners();
   };
@@ -512,7 +517,6 @@ export function renderParentForm() {
   // ─── event listeners ──────────────────────────────────────────────────────
 
   const attachListeners = () => {
-    // Chip clicks (single-select & multi-select)
     container.querySelectorAll('.ms-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const { field, value } = chip.dataset;
@@ -534,19 +538,15 @@ export function renderParentForm() {
       });
     });
 
-    // Select: child_age
     const elChildAge = container.querySelector('#child_age');
     if (elChildAge) elChildAge.addEventListener('change', e => { formData.child_age = e.target.value; render(); });
 
-    // Textarea: korean_level_note (no re-render needed)
     const elLevelNote = container.querySelector('#korean_level_note');
     if (elLevelNote) elLevelNote.addEventListener('input', e => { formData.korean_level_note = e.target.value; });
 
-    // Textarea: learning_goal_note
     const elGoalNote = container.querySelector('#learning_goal_note');
     if (elGoalNote) elGoalNote.addEventListener('input', e => { formData.learning_goal_note = e.target.value; });
 
-    // Select: country — reset city + recompute timezone
     const elCountry = container.querySelector('#country');
     if (elCountry) elCountry.addEventListener('change', e => {
       formData.country = e.target.value;
@@ -556,14 +556,12 @@ export function renderParentForm() {
       render();
     });
 
-    // Input: country_other
     const elCountryOther = container.querySelector('#country_other');
     if (elCountryOther) elCountryOther.addEventListener('input', e => {
       formData.country_other = e.target.value;
       syncActionBtn();
     });
 
-    // Select: city — recompute timezone
     const elCity = container.querySelector('#city');
     if (elCity && !elCity.disabled) elCity.addEventListener('change', e => {
       formData.city = e.target.value;
@@ -572,14 +570,12 @@ export function renderParentForm() {
       render();
     });
 
-    // Input: city_other
     const elCityOther = container.querySelector('#city_other');
     if (elCityOther) elCityOther.addEventListener('input', e => {
       formData.city_other = e.target.value;
       syncActionBtn();
     });
 
-    // Step 4 inputs
     const elParentName = container.querySelector('#parent_name');
     if (elParentName) elParentName.addEventListener('input', e => { formData.parent_name = e.target.value; syncActionBtn(); });
 
@@ -592,7 +588,6 @@ export function renderParentForm() {
     const elReferral = container.querySelector('#referral_source');
     if (elReferral) elReferral.addEventListener('change', e => { formData.referral_source = e.target.value; });
 
-    // Navigation: next / back
     const btnNext = container.querySelector('#btn-next');
     if (btnNext) btnNext.addEventListener('click', () => {
       if (!btnNext.disabled) { currentStep++; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -605,7 +600,6 @@ export function renderParentForm() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Submit
     const btnSubmit = container.querySelector('#btn-submit');
     if (btnSubmit) btnSubmit.addEventListener('click', () => {
       if (btnSubmit.disabled) return;
@@ -619,14 +613,15 @@ export function renderParentForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      }).catch(() => {}); // 이메일 실패가 신청 성공에 영향 없음
+      }).catch(() => {});
       currentStep = 'done';
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   };
 
-  // Sync action button without full re-render (used for text inputs)
+  // ─── step 3 / 4 버튼 상태 동기화 (텍스트 입력용, 전체 render 없이) ────────
+
   const syncActionBtn = () => {
     if (currentStep === 3) {
       const btn = container.querySelector('#btn-next');
@@ -643,6 +638,7 @@ export function renderParentForm() {
     }
   };
 
+  init();
   render();
   return container;
 }
