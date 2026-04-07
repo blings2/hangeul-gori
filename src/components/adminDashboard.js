@@ -1,5 +1,5 @@
 import { getParentApps, getTeacherApps, updateParentStatus, updateTeacherStatus, updateAdminNote, getMatchByParentId, getTeacherById, saveMatchRecord } from './storage.js';
-import { convertToKST } from '../lib/convertToKST.js';
+import { convertToKST, getTimezoneInfo } from '../lib/convertToKST.js';
 
 export function renderAdminDashboard() {
   const container = document.createElement('div');
@@ -76,22 +76,30 @@ export function renderAdminDashboard() {
                   <p><strong>한글수준:</strong> ${item.korean_level}</p>
                   <p><strong>수업목표:</strong> ${item.learning_goal}</p>
                   ${item.available_days?.length > 0 ? (() => {
-                    const kst = convertToKST(item.available_days, item.available_times || [], item.local_timezone || '');
+                    const tzInfo = getTimezoneInfo(item.local_timezone || '');
+                    const slots  = convertToKST(item.available_days, item.available_times || [], item.local_timezone || '');
+                    const tzLabel = tzInfo
+                      ? `${tzInfo.city} (${tzInfo.abbr}, ${tzInfo.offsetStr})`
+                      : (item.local_timezone || '');
+                    const rows = slots.map(s => `
+                      <tr>
+                        <td style="padding:4px 8px 4px 0; font-size:13px; white-space:nowrap;">${s.local}</td>
+                        <td style="padding:4px 0 4px 12px; font-size:13px; white-space:nowrap; border-left:1px solid var(--border);">${s.kst} KST</td>
+                      </tr>
+                    `).join('');
                     return `
                       <div style="margin:8px 0;">
                         <strong>희망 수업 시간</strong>
-                        <div style="display:flex; gap:16px; margin-top:6px;">
-                          <div style="flex:1;">
-                            <div style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:3px;">현지 시간</div>
-                            <div style="font-size:13px;">${item.available_days.join(', ')}</div>
-                            <div style="font-size:13px;">${(item.available_times || []).join(' / ')}</div>
-                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${item.local_timezone || ''}</div>
-                          </div>
-                          <div style="flex:1;">
-                            <div style="font-size:11px; color:var(--text-muted); font-weight:600; margin-bottom:3px;">한국 시간 (KST)</div>
-                            <div style="font-size:13px; line-height:1.7;">${kst.length ? kst.join('<br/>') : '-'}</div>
-                          </div>
-                        </div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${tzLabel}</div>
+                        <table style="border-collapse:collapse; margin-top:6px; width:100%;">
+                          <thead>
+                            <tr>
+                              <th style="padding:4px 8px 4px 0; font-size:11px; color:var(--text-muted); font-weight:600; text-align:left;">현지 시간</th>
+                              <th style="padding:4px 0 4px 12px; font-size:11px; color:var(--text-muted); font-weight:600; text-align:left; border-left:1px solid var(--border);">한국 시간 (KST)</th>
+                            </tr>
+                          </thead>
+                          <tbody>${rows}</tbody>
+                        </table>
                       </div>
                     `;
                   })() : `<p><strong>희망시간:</strong> ${item.preferred_schedule || '이전 형식'}</p>`}

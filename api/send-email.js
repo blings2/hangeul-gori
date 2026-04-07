@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { convertToKST, getTimezoneInfo } from '../src/lib/convertToKST.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -27,6 +28,15 @@ export default async function handler(req, res) {
   const goalsText = Array.isArray(learning_goal)
     ? learning_goal.map(g => `  - ${g}`).join('\n')
     : `  - ${learning_goal}`;
+
+  const tzInfo    = getTimezoneInfo(local_timezone);
+  const tzLabel   = tzInfo
+    ? `${tzInfo.city} (${tzInfo.abbr}, ${tzInfo.offsetStr})`
+    : (local_timezone || '-');
+  const slots     = convertToKST(available_days || [], available_times || [], local_timezone || '');
+  const scheduleText = slots.length > 0
+    ? slots.map(s => `  ${s.local}  →  ${s.kst} KST`).join('\n')
+    : '  -';
 
   const parentEmailText = `
 안녕하세요, ${parent_name}님 👋
@@ -60,9 +70,10 @@ ${goalsText}
 
 ── 수업 일정 / 장소 ─────────────────
 거주지:      ${country}${city ? ` / ${city}` : ''}
-희망 요일:   ${(available_days || []).join(', ')}
-희망 시간대: ${(available_times || []).join(' / ')}
-Timezone:    ${local_timezone || '-'}
+현지 timezone: ${tzLabel}
+
+희망 수업 시간 (현지 / KST):
+${scheduleText}
 ────────────────────────────────────
 
 어드민 대시보드: https://hangeul-gori.vercel.app/#/admin
