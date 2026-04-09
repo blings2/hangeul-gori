@@ -4,11 +4,13 @@ export type ChildInfo = {
   age: string;
   homeLanguage: string;
   parentKorean: string;
+  personality: string[]; // 복수 선택
 };
 
 export type KoreanLevel = {
   level: string; // 'zero' | 'alpha' | 'listen' | 'speak' | 'read'
   exposure: string[];
+  subAnswer: string; // 레벨별 보조 질문 응답
 };
 
 export type Schedule = {
@@ -44,10 +46,12 @@ export const initialFormData: FormData = {
     age: '',
     homeLanguage: '',
     parentKorean: '',
+    personality: [],
   },
   koreanLevel: {
     level: '',
     exposure: [],
+    subAnswer: '',
   },
   goals: [],
   schedule: {

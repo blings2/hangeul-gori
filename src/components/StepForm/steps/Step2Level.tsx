@@ -71,6 +71,14 @@ const LEVELS = [
   },
 ] as const;
 
+const LEVEL_SUB_QUESTIONS: Record<string, { question: string; options: readonly string[] }> = {
+  zero:   { question: '한국어로 말을 걸면 어떻게 반응하나요?',   options: ['무시해요', '웃으면서 모른다고 해요', '가끔 따라해요'] },
+  alpha:  { question: '어느 정도 읽을 수 있나요?',               options: ['자음·모음 일부만', '받침 없는 단어', '짧은 문장'] },
+  listen: { question: '주로 어떤 상황에서 한국어를 들었나요?',   options: ['부모님 대화', 'TV·유튜브', '한국 방문'] },
+  speak:  { question: '주로 어떤 언어로 대답하나요?',            options: ['한국어로', '섞어서', '현지어로 대답해요'] },
+  read:   { question: '쓰기 수준은 어느 정도인가요?',            options: ['받아쓰기 가능', '짧은 문장 작성', '문단 쓰기 가능'] },
+};
+
 const EXPOSURE_OPTIONS = [
   { value: 'parents', label: '엄마·아빠가 한국어로 말을 걸어요',    sub: '하루에 몇 마디라도 한국어로 대화해요' },
   { value: 'books',   label: '잠자리에서 한국 책을 읽어줘요',        sub: '그림책·동화책을 한국어로 읽어주는 편이에요' },
@@ -82,6 +90,14 @@ const EXPOSURE_OPTIONS = [
 ];
 
 function Step2Level({ data, onChange, onNext, onBack }: Props) {
+  const handleLevelChange = useCallback((level: string) => {
+    onChange({ level, subAnswer: '' });
+  }, [onChange]);
+
+  const handleSubAnswer = useCallback((value: string) => {
+    onChange({ subAnswer: data.subAnswer === value ? '' : value });
+  }, [data.subAnswer, onChange]);
+
   const toggleExposure = useCallback((value: string) => {
     const next = data.exposure.includes(value)
       ? data.exposure.filter(v => v !== value)
@@ -101,7 +117,7 @@ function Step2Level({ data, onChange, onNext, onBack }: Props) {
           <div
             key={level.value}
             className={`stepform-level-card${data.level === level.value ? ' selected' : ''}`}
-            onClick={() => onChange({ level: level.value })}
+            onClick={() => handleLevelChange(level.value)}
             role="button"
             aria-pressed={data.level === level.value}
           >
@@ -113,17 +129,38 @@ function Step2Level({ data, onChange, onNext, onBack }: Props) {
       </div>
 
       {/* 설명 박스 — 모두 DOM에 유지, CSS transition으로 슬라이드 */}
-      {LEVELS.map(level => (
-        <div
-          key={level.value}
-          className={`stepform-level-detail${data.level === level.value ? ' visible' : ''}`}
-          aria-hidden={data.level !== level.value}
-        >
-          <ul>
-            {level.detail.map((item, i) => <li key={i}>{item}</li>)}
-          </ul>
-        </div>
-      ))}
+      {LEVELS.map(level => {
+        const sub = LEVEL_SUB_QUESTIONS[level.value];
+        return (
+          <div
+            key={level.value}
+            className={`stepform-level-detail${data.level === level.value ? ' visible' : ''}`}
+            aria-hidden={data.level !== level.value}
+          >
+            <ul>
+              {level.detail.map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+            {sub && (
+              <>
+                <div className="stepform-level-detail-divider" />
+                <p className="stepform-level-sub-question">{sub.question}</p>
+                <div className="stepform-level-sub-chips">
+                  {sub.options.map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      className={`stepform-level-sub-chip${data.subAnswer === opt ? ' selected' : ''}`}
+                      onClick={() => handleSubAnswer(opt)}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })}
 
       {/* 섹션 2 — 노출 환경 (복수 선택, 선택 안 해도 통과) */}
       <span className="stepform-field-label">

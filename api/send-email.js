@@ -1,5 +1,4 @@
 import { Resend } from 'resend';
-import { convertToKST, getTimezoneInfo } from '../src/lib/convertToKST.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -13,29 +12,41 @@ export default async function handler(req, res) {
     child_name,
     child_age,
     email,
+    child_gender,
+    referral_source,
     korean_level,
     learning_goal,
     country,
     city,
-    available_days,
     available_times,
-    local_timezone,
+    // 어드민 이메일용 신규 필드
+    home_language,
+    parent_korean,
+    korean_exposure,
+    kst_summary,
+    frequency,
+    teacher_prefs,
   } = req.body;
 
   const from    = process.env.FROM_EMAIL   || 'onboarding@resend.dev';
   const adminTo = process.env.ADMIN_EMAIL;
 
-  const goalsText = Array.isArray(learning_goal)
-    ? learning_goal.map(g => `  - ${g}`).join('\n')
-    : `  - ${learning_goal}`;
+  const toLines = (arr, fallback = '-') =>
+    Array.isArray(arr) && arr.length > 0
+      ? arr.map(v => `  - ${v}`).join('\n')
+      : `  ${fallback}`;
 
-  const tzInfo    = getTimezoneInfo(local_timezone);
-  const tzLabel   = tzInfo
-    ? `${tzInfo.city} (${tzInfo.abbr}, ${tzInfo.offsetStr})`
-    : (local_timezone || '-');
-  const slots     = convertToKST(available_days || [], available_times || [], local_timezone || '');
-  const scheduleText = slots.length > 0
-    ? slots.map(s => `  ${s.local}  →  ${s.kst} KST`).join('\n')
+  const goalsText    = toLines(learning_goal);
+  const exposureText = toLines(korean_exposure);
+  const teacherText  = toLines(teacher_prefs);
+
+  const timeblocksLabel = {
+    morning:   '오전 (08:00–12:00)',
+    afternoon: '오후 (12:00–18:00)',
+    evening:   '저녁 (18:00–22:00)',
+  };
+  const timeblocksText = Array.isArray(available_times) && available_times.length > 0
+    ? available_times.map(v => `  - ${timeblocksLabel[v] || v}`).join('\n')
     : '  -';
 
   const parentEmailText = `
@@ -58,22 +69,35 @@ ${child_name}의 한글 수업 신청이 잘 접수되었어요.
   const adminEmailText = `
 새 수업 신청이 들어왔어요.
 
-── 부모 / 아이 정보 ─────────────────
-부모 이름:  ${parent_name}
-아이 이름:  ${child_name}
-이메일:     ${email}
-아이 나이:  ${child_age}
-한국어 수준: ${korean_level}
+── 연락처 ───────────────────────────
+부모 이름:      ${parent_name}
+아이 이름:      ${child_name}
+이메일:         ${email}
+아이 성별:      ${child_gender || '-'}
+유입 경로:      ${referral_source || '-'}
 
-── 학습 목표 ────────────────────────
+── 아이 정보 ────────────────────────
+나이:           ${child_age || '-'}
+가정 언어:      ${home_language || '-'}
+부모 한국어:    ${parent_korean || '-'}
+
+── 한국어 실력 ──────────────────────
+수준:           ${korean_level || '-'}
+노출 환경:
+${exposureText}
+
+── 수업 목표 ────────────────────────
 ${goalsText}
 
-── 수업 일정 / 장소 ─────────────────
-거주지:      ${country}${city ? ` / ${city}` : ''}
-현지 timezone: ${tzLabel}
+── 수업 환경 ────────────────────────
+거주지:         ${country || '-'}${city && city !== country ? ` / ${city}` : ''}
+희망 시간대:
+${timeblocksText}
+KST 기준:       ${kst_summary || '-'}
+수업 빈도:      ${frequency || '-'}
 
-희망 수업 시간 (현지 / KST):
-${scheduleText}
+── 선생님 선호 ──────────────────────
+${teacherText}
 ────────────────────────────────────
 
 어드민 대시보드: https://hangeul-gori.vercel.app/#/admin

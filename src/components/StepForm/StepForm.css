@@ -779,3 +779,86 @@
   text-align: center;
   font-family: var(--font-kr);
 }
+
+/* ─── Step2 레벨 설명 박스 — 보조 질문 ──────────────────────────────────────── */
+
+.stepform-level-detail-divider {
+  height: 1px;
+  background: var(--color-primary-light);
+  margin: 10px 0;
+  opacity: 0.5;
+}
+.stepform-level-sub-question {
+  font-size: 12px;
+  color: var(--color-primary-dark);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.stepform-level-sub-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stepform-level-sub-chip {
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-primary);
+  color: var(--color-primary-dark);
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-kr);
+}
+.stepform-level-sub-chip.selected {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ─── Step3 특수 상황 트랙 섹션 ───────────────────────────────────────────────── */
+
+.stepform-section-badge.special {
+  background: #F0EBE3;
+  color: #6B4F35;
+}
+
+.stepform-section-sub {
+  font-size: 12px;
+  color: #B4B2A9;
+  margin-top: -6px;
+  margin-bottom: 10px;
+}
+
+/* ─── Step1 아이 성향 ──────────────────────────────────────────────────────────── */
+
+.stepform-personality-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stepform-personality-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 0.5px solid #E5E2DC;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.15s;
+  user-select: none;
+}
+.stepform-personality-chip.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+.stepform-personality-emoji {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.stepform-personality-label {
+  font-size: 13px;
+  color: #3D2B1A;
+  line-height: 1.4;
+}

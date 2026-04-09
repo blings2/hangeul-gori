@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import type { FormData } from '../../../types/stepform';
 
 type Props = {
@@ -20,8 +20,24 @@ const PARENT_OPTIONS = [
   '둘 다 한국어 가능', '한 명만 가능', '둘 다 못해요',
 ];
 
+const PERSONALITY_OPTIONS = [
+  { value: 'social',   emoji: '😊', label: '낯선 어른과도 금방 친해져요' },
+  { value: 'shy',      emoji: '🤫', label: '처음엔 수줍어하는 편이에요' },
+  { value: 'playful',  emoji: '🎮', label: '게임·놀이로 배우는 걸 좋아해요' },
+  { value: 'calm',     emoji: '📖', label: '차분히 앉아서 배우는 걸 좋아해요' },
+  { value: 'musical',  emoji: '🎵', label: '노래·율동으로 배우면 잘 따라해요' },
+  { value: 'active',   emoji: '⚡', label: '집중 시간이 짧은 편이에요' },
+];
+
 function Step1Child({ data, onChange, onNext }: Props) {
   const canProceed = !!(data.age && data.homeLanguage && data.parentKorean);
+
+  const togglePersonality = useCallback((value: string) => {
+    const next = data.personality.includes(value)
+      ? data.personality.filter(v => v !== value)
+      : [...data.personality, value];
+    onChange({ personality: next });
+  }, [data.personality, onChange]);
 
   return (
     <div className="stepform-card">
@@ -71,6 +87,29 @@ function Step1Child({ data, onChange, onNext }: Props) {
             {opt}
           </button>
         ))}
+      </div>
+
+      {/* 섹션 4 — 아이 성향 (선택) */}
+      <div className="stepform-field-group">
+        <span className="stepform-field-label">
+          우리 아이는 어떤 편인가요?
+          <span className="stepform-optional"> 선택</span>
+        </span>
+        <p className="stepform-section-sub">선생님 매칭 시 수업 스타일에 참고해요</p>
+        <div className="stepform-personality-grid">
+          {PERSONALITY_OPTIONS.map(p => (
+            <div
+              key={p.value}
+              className={`stepform-personality-chip${data.personality.includes(p.value) ? ' selected' : ''}`}
+              onClick={() => togglePersonality(p.value)}
+              role="checkbox"
+              aria-checked={data.personality.includes(p.value)}
+            >
+              <span className="stepform-personality-emoji">{p.emoji}</span>
+              <span className="stepform-personality-label">{p.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="stepform-nav-row">

@@ -100,10 +100,13 @@ function StepForm() {
 
     // 이메일 발송 (실패해도 제출 완료로 처리)
     const emailPayload = {
+      // 유저 확인 이메일용 (기존 필드 유지)
       parent_name:    contact.parentName,
       child_name:     contact.childName,
       child_age:      child.age,
       email:          contact.email,
+      child_gender:   contact.childGender,
+      referral_source: contact.referralSource,
       korean_level:   koreanLevel.level,
       learning_goal:  goals,
       country,
@@ -111,6 +114,13 @@ function StepForm() {
       available_days: [],
       available_times: schedule.timeBlocks,
       local_timezone: '',
+      // 어드민 이메일용 신규 필드
+      home_language:  child.homeLanguage,
+      parent_korean:  child.parentKorean,
+      korean_exposure: koreanLevel.exposure,
+      kst_summary:    schedule.kstSummary,
+      frequency:      schedule.frequency,
+      teacher_prefs:  schedule.teacherPrefs,
     };
 
     try {
