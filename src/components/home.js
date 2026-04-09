@@ -9,7 +9,8 @@ export function renderHome() {
       .home-header { padding: 40px 24px 32px; background: var(--surface); text-align: center; border-bottom: 1px solid var(--border); }
       .logo { max-width: 120px; height: auto; margin: 0 auto 24px auto; display: block; }
       .hero-title { font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.5px; }
-      .hero-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+      .hero-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
+      .hero-sub2 { font-size: 12px; color: var(--primary); font-weight: 500; margin-bottom: 24px; }
       .hero-actions { display: flex; gap: 12px; flex-direction: row; justify-content: center; }
       .hero-actions .btn { flex: 1; padding: 14px 16px; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; text-decoration: none; text-align: center; transition: var(--transition); }
       .hero-actions .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: var(--shadow-sm); }
@@ -62,12 +63,17 @@ export function renderHome() {
     <!-- 1. COMPACT HERO -->
     <header class="home-header">
       <img src="/logo.png" alt="한글고리 로고" class="logo" />
-      <h1 class="hero-title">해외에서도, 우리 아이의 한글을 이어가세요</h1>
-      <p class="hero-subtitle">아이에게 맞는 한글 선생님을 연결해드립니다</p>
+      <h1 class="hero-title">세계 어디서든,<br/>우리 아이의 한국어를<br/>이어갑니다</h1>
+      <p class="hero-subtitle">아이 성향에 맞는 어린이 한글 전문 선생님을<br/>집에서 편하게 만나보세요</p>
+      <p class="hero-sub2">라이딩 걱정 없이, 검증된 선생님과 1:1 화상 수업</p>
       <div class="hero-actions">
-        <a href="#/apply" class="btn btn-primary">수업 신청하기 &rarr;</a>
+        <a href="#/apply" class="btn btn-primary">선생님 찾기 &rarr;</a>
         <a href="#/teach" class="btn btn-secondary">선생님 등록하기</a>
       </div>
+      <div class="hero-image-wrap">
+        <img src="/hero-child.jpg" alt="집에서 화상수업 중인 아이" />
+      </div>
+      <p class="hero-image-caption">집에서 편하게, 선생님과 1:1 화상 수업</p>
     </header>
 
     <!-- 2. USER STATUS CARD -->
@@ -77,41 +83,69 @@ export function renderHome() {
       <a href="#/apply" class="status-btn">수업 신청하기 &rarr;</a>
     </div>
 
-    <!-- 3. HOW IT WORKS -->
+    <!-- 3. PAIN POINTS -->
+    <section class="pain-section">
+      <h2 class="pain-title">이런 고민, 있으신가요?</h2>
+      <div class="pain-grid">
+        <div class="pain-card"><span class="pain-emoji">🚗</span><span class="pain-text">"한글학교가 너무 멀어서 매주 라이딩이 너무 힘들어요"</span></div>
+        <div class="pain-card"><span class="pain-emoji">🌍</span><span class="pain-text">"한국인이 많이 없는 지역에 살고 있어서 한글 교육 시설이 없어요"</span></div>
+        <div class="pain-card"><span class="pain-emoji">👩‍🏫</span><span class="pain-text">"아이 성향에 맞는 선생님을 어떻게 찾아야 할지 모르겠어요"</span></div>
+        <div class="pain-card"><span class="pain-emoji">👨‍👩‍👧</span><span class="pain-text">"남편이 외국인이라 집에서 한국어를 안 써요"</span></div>
+        <div class="pain-card"><span class="pain-emoji">😔</span><span class="pain-text">"아이가 한국 할머니랑 대화를 못해서 너무 속상해요"</span></div>
+        <div class="pain-card"><span class="pain-emoji">⏰</span><span class="pain-text">"시간대가 안 맞아서 한국 선생님을 구하기가 너무 어려워요"</span></div>
+      </div>
+      <p class="pain-footer">한글고리가 이 고민들을 해결해드려요</p>
+    </section>
+
+    <!-- 4. HOW IT WORKS -->
     <section class="section-container">
       <h2 class="section-title">이렇게 진행돼요</h2>
       <div class="info-card">
         <div class="info-card-icon">1</div>
         <div class="info-card-content">
-          <h4>수업 신청</h4>
-          <p>간단한 정보 입력</p>
+          <h4>아이 정보 입력 (5분)</h4>
+          <p>나이, 한국어 실력, 학습 목표를 알려주세요. 아이 성향까지 파악해서 딱 맞는 선생님을 찾아드려요</p>
         </div>
       </div>
       <div class="info-card">
         <div class="info-card-icon">2</div>
         <div class="info-card-content">
-          <h4>선생님 매칭</h4>
-          <p>운영자가 확인</p>
+          <h4>선생님 매칭 (2~3일)</h4>
+          <p>담당자가 직접 검토해서 아이에게 맞는 선생님을 연결해드려요. 매칭 결과는 이메일로 안내드려요</p>
         </div>
       </div>
       <div class="info-card">
         <div class="info-card-icon">3</div>
         <div class="info-card-content">
-          <h4>수업 시작</h4>
-          <p>맞는 선생님과 연결</p>
+          <h4>집에서 수업 시작</h4>
+          <p>Zoom 등 화상통화로 집에서 편하게 시작해요. 라이딩 걱정 없이, 우리 동네 시간대에 맞춰서</p>
         </div>
       </div>
     </section>
 
-    <!-- 4. TRUST BLOCK -->
+    <!-- 5. WHY 한글고리 -->
     <section class="section-container">
-      <h2 class="section-title">우리한글은 이렇게 연결합니다</h2>
-      <div class="trust-card">
-        <ul class="trust-list">
-          <li>어린이 수업 경험 있는 선생님 중심</li>
-          <li>아이 나이와 수준 기반 매칭</li>
-          <li>운영자가 직접 확인 후 연결</li>
-        </ul>
+      <h2 class="section-title">왜 한글고리인가요?</h2>
+      <div class="info-card">
+        <div class="info-card-icon">🌱</div>
+        <div class="info-card-content">
+          <h4>정체성과 헤리티지</h4>
+          <p>한국어는 단순한 언어가 아니에요. 아이가 한국 문화, 가족, 뿌리와 자연스럽게 연결될 수 있도록 도와드려요.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🏠</div>
+        <div class="info-card-content">
+          <h4>세계 어디서든, 집에서 편하게</h4>
+          <p>뉴욕이든 싱가포르든 런던이든, 라이딩 걱정 없이 거주지 시간대에 맞춰 집에서 수업을 시작할 수 있어요.</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">👩‍🏫</div>
+        <div class="info-card-content">
+          <h4>검증된 유아·어린이 전문 선생님</h4>
+          <p>아동 한국어 교육 경험, 화상 수업 환경, 자체 인터뷰를 모두 통과한 믿을 수 있는 선생님들이에요.</p>
+        </div>
       </div>
     </section>
 
@@ -150,10 +184,17 @@ export function renderHome() {
       </div>
     </section>
 
-    <!-- 6. FINAL CTA -->
+    <!-- 6. TEACHER CAROUSEL -->
+    <div id="teacher-carousel-root"></div>
+
+    <!-- 7. REVIEW CAROUSEL -->
+    <div id="review-carousel-root"></div>
+
+    <!-- 8. FINAL CTA -->
     <section class="final-cta">
-      <h2>우리 아이에게 맞는 한글 수업,<br/>가볍게 시작해보세요</h2>
-      <a href="#/apply" class="final-btn">수업 신청하기 &rarr;</a>
+      <h2>지금 바로 시작해보세요<br/>아이에게 맞는 선생님을 찾는 데 5분이면 충분해요</h2>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">현재 12개국 가정이 한글고리와 함께하고 있어요</p>
+      <a href="#/apply" class="final-btn">무료로 선생님 찾기 &rarr;</a>
     </section>
 
     <!-- 7. FOOTER -->

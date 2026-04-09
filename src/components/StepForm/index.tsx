@@ -117,7 +117,9 @@ function StepForm() {
       // 어드민 이메일용 신규 필드
       home_language:  child.homeLanguage,
       parent_korean:  child.parentKorean,
+      personality:    child.personality,
       korean_exposure: koreanLevel.exposure,
+      sub_answer:     koreanLevel.subAnswer,
       kst_summary:    schedule.kstSummary,
       frequency:      schedule.frequency,
       teacher_prefs:  schedule.teacherPrefs,

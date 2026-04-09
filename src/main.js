@@ -5,6 +5,7 @@ import { renderAdminDashboard } from './components/adminDashboard.js';
 import { renderSuccess } from './components/success.js';
 import { initStorage } from './components/storage.js';
 import { mountStepForm, unmountStepForm } from './components/StepForm/mount.ts';
+import { mountHomeCarousels, unmountHomeCarousels } from './components/homeCarousels.ts';
 
 const app = document.querySelector('#app');
 
@@ -13,10 +14,13 @@ function router() {
 
   // React 루트가 살아있으면 먼저 언마운트 (다른 라우트로 이동 시)
   unmountStepForm();
+  unmountHomeCarousels();
   app.innerHTML = '';
 
   if (hash === '#/') {
-    app.appendChild(renderHome());
+    const homeEl = renderHome();
+    app.appendChild(homeEl);
+    mountHomeCarousels(app);
   } else if (hash === '#/apply') {
     mountStepForm(app);
   } else if (hash === '#/apply/v1') {
