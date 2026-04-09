@@ -1,21 +1,29 @@
 import './style.css';
 import { renderHome } from './components/home.js';
-import { renderParentForm } from './components/parentForm.js';
 import { renderTeacherForm } from './components/teacherForm.js';
 import { renderAdminDashboard } from './components/adminDashboard.js';
 import { renderSuccess } from './components/success.js';
 import { initStorage } from './components/storage.js';
+import { mountStepForm, unmountStepForm } from './components/StepForm/mount.ts';
 
 const app = document.querySelector('#app');
 
 function router() {
   const hash = window.location.hash || '#/';
+
+  // React 루트가 살아있으면 먼저 언마운트 (다른 라우트로 이동 시)
+  unmountStepForm();
   app.innerHTML = '';
-  
+
   if (hash === '#/') {
     app.appendChild(renderHome());
   } else if (hash === '#/apply') {
-    app.appendChild(renderParentForm());
+    mountStepForm(app);
+  } else if (hash === '#/apply/v1') {
+    // v1 백업 폼 (레거시 참조용)
+    import('./components/applyV1/parentForm.js').then(({ renderParentForm }) => {
+      app.appendChild(renderParentForm());
+    });
   } else if (hash === '#/teach') {
     app.appendChild(renderTeacherForm());
   } else if (hash === '#/admin') {

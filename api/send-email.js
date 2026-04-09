@@ -79,10 +79,19 @@ ${scheduleText}
 어드민 대시보드: https://hangeul-gori.vercel.app/#/admin
 `.trim();
 
+  // Resend 무료 플랜 제한:
+  // FROM_EMAIL이 onboarding@resend.dev인 경우 계정 소유자 이메일(ADMIN_EMAIL)로만 발송 가능.
+  // 외부 유저 이메일로 보내려면 resend.com/domains 에서 도메인 연결 후
+  // FROM_EMAIL을 해당 도메인 주소(예: noreply@yourdomain.com)로 교체해야 함.
+  //
+  // 도메인 연결 전 임시 테스트: .env.local에 PARENT_EMAIL_OVERRIDE=your@email.com 설정 시
+  // 유저 확인 이메일을 해당 주소로 리다이렉트하여 수신 여부 확인 가능.
+  const parentTo = process.env.PARENT_EMAIL_OVERRIDE || email;
+
   const [parentResult, adminResult] = await Promise.allSettled([
     resend.emails.send({
       from,
-      to:      email,
+      to:      parentTo,
       subject: `${child_name}의 선생님을 찾기 시작했어요`,
       text:    parentEmailText,
     }),
@@ -96,20 +105,32 @@ ${scheduleText}
       : Promise.resolve({ status: 'skipped' }),
   ]);
 
+  // NOTE: Resend SDK는 API 오류 시 reject 대신 { data: null, error: {...} }로 resolve함.
+  // status === 'rejected'는 네트워크 오류 등 SDK 자체 예외에만 해당되므로
+  // Resend API 레벨 오류는 반드시 result.value.error 를 별도로 체크해야 함.
   if (parentResult.status === 'rejected') {
-    console.error('[send-email] parent email failed:', JSON.stringify(parentResult.reason));
+    console.error('[send-email] parent email exception:', JSON.stringify(parentResult.reason));
+  } else if (parentResult.value?.error) {
+    console.error('[send-email] parent email failed (Resend API error):', JSON.stringify(parentResult.value.error));
   } else {
-    console.log('[send-email] parent email sent:', JSON.stringify(parentResult.value));
+    console.log('[send-email] parent email sent:', JSON.stringify(parentResult.value?.data));
   }
 
   if (adminResult.status === 'rejected') {
-    console.error('[send-email] admin email failed:', JSON.stringify(adminResult.reason));
+    console.error('[send-email] admin email exception:', JSON.stringify(adminResult.reason));
+  } else if (adminResult.value?.error) {
+    console.error('[send-email] admin email failed (Resend API error):', JSON.stringify(adminResult.value.error));
   } else {
-    console.log('[send-email] admin email sent:', JSON.stringify(adminResult.value));
+    console.log('[send-email] admin email sent:', JSON.stringify(adminResult.value?.data));
   }
 
+  const parentOk = parentResult.status === 'fulfilled' && !parentResult.value?.error;
+  const adminOk  = adminResult.status  === 'fulfilled' && !adminResult.value?.error;
+
   return res.status(200).json({
-    parent: parentResult.status,
-    admin:  adminResult.status,
+    parent: parentOk  ? 'fulfilled' : 'failed',
+    admin:  adminOk   ? 'fulfilled' : (adminTo ? 'failed' : 'skipped'),
+    ...(parentResult.value?.error && { parent_error: parentResult.value.error }),
+    ...(adminResult.value?.error  && { admin_error:  adminResult.value.error  }),
   });
 }
