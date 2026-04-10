@@ -862,3 +862,36 @@
   color: #3D2B1A;
   line-height: 1.4;
 }
+
+/* ─── Responsive: Tablet 641px+ ─────────────────────────────────────────────── */
+@media (min-width: 641px) {
+  .stepform-container {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .stepform-nav {
+    max-width: 560px;
+  }
+}
+
+/* ─── Responsive: PC 1025px+ ────────────────────────────────────────────────── */
+@media (min-width: 1025px) {
+  .stepform-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 0 80px;
+  }
+  .stepform-nav {
+    max-width: 600px;
+  }
+  .stepform-level-card {
+    padding: 14px 8px;
+  }
+  .stepform-level-icon {
+    font-size: 22px;
+  }
+  .stepform-tag {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}

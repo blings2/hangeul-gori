@@ -62,18 +62,19 @@ export function renderHome() {
 
     <!-- 1. COMPACT HERO -->
     <header class="home-header">
-      <img src="/logo.png" alt="한글고리 로고" class="logo" />
-      <h1 class="hero-title">세계 어디서든,<br/>우리 아이의 한국어를<br/>이어갑니다</h1>
-      <p class="hero-subtitle">아이 성향에 맞는 어린이 한글 전문 선생님을<br/>집에서 편하게 만나보세요</p>
-      <p class="hero-sub2">라이딩 걱정 없이, 검증된 선생님과 1:1 화상 수업</p>
-      <div class="hero-actions">
-        <a href="#/apply" class="btn btn-primary">선생님 찾기 &rarr;</a>
-        <a href="#/teach" class="btn btn-secondary">선생님 등록하기</a>
+      <div class="hero-text-col">
+        <img src="/logo.png" alt="한글고리 로고" class="logo" />
+        <h1 class="hero-title">세계 어디서든,<br/>우리 아이의 한국어를<br/>이어갑니다</h1>
+        <p class="hero-subtitle">아이 성향에 맞는 어린이 한글 전문 선생님을<br/>집에서 편하게 만나보세요</p>
+        <p class="hero-sub2">라이딩 걱정 없이, 검증된 선생님과 1:1 화상 수업</p>
+        <div class="hero-actions">
+          <a href="#/apply" class="btn btn-primary">선생님 찾기 &rarr;</a>
+          <a href="#/teach" class="btn btn-secondary">선생님 등록하기</a>
+        </div>
       </div>
       <div class="hero-image-wrap">
         <img src="/hero-child.jpg" alt="집에서 화상수업 중인 아이" />
       </div>
-      <p class="hero-image-caption">집에서 편하게, 선생님과 1:1 화상 수업</p>
     </header>
 
     <!-- 2. USER STATUS CARD -->
@@ -98,88 +99,51 @@ export function renderHome() {
     </section>
 
     <!-- 4. HOW IT WORKS -->
-    <section class="section-container">
-      <h2 class="section-title">이렇게 진행돼요</h2>
-      <div class="info-card">
-        <div class="info-card-icon">1</div>
-        <div class="info-card-content">
-          <h4>아이 정보 입력 (5분)</h4>
-          <p>나이, 한국어 실력, 학습 목표를 알려주세요. 아이 성향까지 파악해서 딱 맞는 선생님을 찾아드려요</p>
+    <section class="how-section">
+      <h2 class="how-title">이렇게 진행돼요</h2>
+      <div class="how-cards-wrap">
+        <div class="info-card">
+          <div class="info-card-icon">1</div>
+          <div class="info-card-content">
+            <h4>아이 정보 입력 (5분)</h4>
+            <p>나이, 한국어 실력, 학습 목표를 알려주세요. 아이 성향까지 파악해서 딱 맞는 선생님을 찾아드려요</p>
+          </div>
         </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">2</div>
-        <div class="info-card-content">
-          <h4>선생님 매칭 (2~3일)</h4>
-          <p>담당자가 직접 검토해서 아이에게 맞는 선생님을 연결해드려요. 매칭 결과는 이메일로 안내드려요</p>
+        <div class="info-card">
+          <div class="info-card-icon">2</div>
+          <div class="info-card-content">
+            <h4>선생님 매칭 (2~3일)</h4>
+            <p>담당자가 직접 검토해서 아이에게 맞는 선생님을 연결해드려요. 매칭 결과는 이메일로 안내드려요</p>
+          </div>
         </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">3</div>
-        <div class="info-card-content">
-          <h4>집에서 수업 시작</h4>
-          <p>Zoom 등 화상통화로 집에서 편하게 시작해요. 라이딩 걱정 없이, 우리 동네 시간대에 맞춰서</p>
+        <div class="info-card">
+          <div class="info-card-icon">3</div>
+          <div class="info-card-content">
+            <h4>집에서 수업 시작</h4>
+            <p>Zoom 등 화상통화로 집에서 편하게 시작해요. 라이딩 걱정 없이, 우리 동네 시간대에 맞춰서</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- 5. WHY 한글고리 -->
-    <section class="section-container">
-      <h2 class="section-title">왜 한글고리인가요?</h2>
-      <div class="info-card">
-        <div class="info-card-icon">🌱</div>
-        <div class="info-card-content">
-          <h4>정체성과 헤리티지</h4>
-          <p>한국어는 단순한 언어가 아니에요. 아이가 한국 문화, 가족, 뿌리와 자연스럽게 연결될 수 있도록 도와드려요.</p>
+    <section class="why-section">
+      <h2 class="why-title">왜 한글고리인가요?</h2>
+      <div class="why-cards-wrap">
+        <div class="why-card">
+          <div class="why-card-icon">🌱</div>
+          <div class="why-card-title">정체성과 헤리티지</div>
+          <div class="why-card-desc">한국어는 단순한 언어가 아니에요. 아이가 한국 문화, 가족, 뿌리와 자연스럽게 연결될 수 있도록 도와드려요.</div>
         </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">🏠</div>
-        <div class="info-card-content">
-          <h4>세계 어디서든, 집에서 편하게</h4>
-          <p>뉴욕이든 싱가포르든 런던이든, 라이딩 걱정 없이 거주지 시간대에 맞춰 집에서 수업을 시작할 수 있어요.</p>
+        <div class="why-card">
+          <div class="why-card-icon">🏠</div>
+          <div class="why-card-title">세계 어디서든, 집에서 편하게</div>
+          <div class="why-card-desc">뉴욕이든 싱가포르든 런던이든, 라이딩 걱정 없이 거주지 시간대에 맞춰 집에서 수업을 시작할 수 있어요.</div>
         </div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">👩‍🏫</div>
-        <div class="info-card-content">
-          <h4>검증된 유아·어린이 전문 선생님</h4>
-          <p>아동 한국어 교육 경험, 화상 수업 환경, 자체 인터뷰를 모두 통과한 믿을 수 있는 선생님들이에요.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. TEACHER PREVIEW -->
-    <section class="section-container">
-      <h2 class="section-title">이런 선생님과 연결됩니다</h2>
-      
-      <div class="teacher-card">
-        <div class="teacher-header">
-          <div class="teacher-avatar">👩🏻‍🏫</div>
-          <div>
-            <span class="teacher-name">김선생님</span>
-            <span class="teacher-exp">유아 한국어 수업 5년</span>
-          </div>
-        </div>
-        <p class="teacher-desc">"아이의 눈높이에 맞춰 놀이하듯 즐겁게 한글을 가르칩니다. 아이가 한글 시간을 기다릴 수 있도록 재미있는 수업을 만들어요."</p>
-        <div class="teacher-badges">
-          <span class="badge">놀이 기반</span>
-          <span class="badge">친근한 소통</span>
-        </div>
-      </div>
-      
-      <div class="teacher-card">
-        <div class="teacher-header">
-          <div class="teacher-avatar">👨🏻‍🏫</div>
-          <div>
-            <span class="teacher-name">이선생님</span>
-            <span class="teacher-exp">초등 국어 교육 전공</span>
-          </div>
-        </div>
-        <p class="teacher-desc">"체계적인 커리큘럼으로 아이의 읽기와 쓰기 실력을 탄탄하게 키워줍니다. 학령기 아이들에게 맞는 맞춤형 지도를 제공합니다."</p>
-        <div class="teacher-badges">
-          <span class="badge">체계적인 수업</span>
-          <span class="badge">초등 대비</span>
+        <div class="why-card">
+          <div class="why-card-icon">👩‍🏫</div>
+          <div class="why-card-title">검증된 유아·어린이 전문 선생님</div>
+          <div class="why-card-desc">아동 한국어 교육 경험, 화상 수업 환경, 자체 인터뷰를 모두 통과한 믿을 수 있는 선생님들이에요.</div>
         </div>
       </div>
     </section>

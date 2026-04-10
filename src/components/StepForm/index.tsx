@@ -90,15 +90,17 @@ function StepForm() {
       contact,
     };
 
+    // 1. Supabase DB 저장 (실패 시 중단)
     try {
-      saveParentApp(storagePayload);
-    } catch {
+      await saveParentApp(storagePayload);
+    } catch (err) {
+      console.error('[handleSubmit] DB 저장 실패:', err);
       setIsSubmitting(false);
-      setSubmitError('저장 중 오류가 발생했어요. 다시 시도해 주세요.');
+      setSubmitError('잠시 문제가 생겼어요. 다시 시도해주시거나 문의해 주세요.');
       return;
     }
 
-    // 이메일 발송 (실패해도 제출 완료로 처리)
+    // 2. 이메일 발송 (실패해도 완료 처리)
     const emailPayload = {
       // 유저 확인 이메일용 (기존 필드 유지)
       parent_name:    contact.parentName,
@@ -132,14 +134,15 @@ function StepForm() {
         body: JSON.stringify(emailPayload),
       });
       if (!res.ok) {
-        console.warn('send-email returned', res.status);
+        console.error('[handleSubmit] 이메일 발송 실패:', res.status);
       }
-    } catch {
-      console.warn('send-email network error');
+    } catch (err) {
+      console.error('[handleSubmit] 이메일 네트워크 에러:', err);
     }
 
-    setIsSubmitting(false);
+    // 3. 무조건 완료 스텝으로 이동
     go(5);
+    setIsSubmitting(false);
   }, [formData, go]);
 
   return (

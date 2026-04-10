@@ -12,9 +12,9 @@ export function renderAdminDashboard() {
 
   const STATUS_OPTIONS = ['신규 접수', '검토중', '매칭 진행중', '매칭 완료', '보류'];
 
-  const render = () => {
+  const render = async () => {
     const isParents = currentTab === 'parents';
-    const data = isParents ? getParentApps() : getTeacherApps();
+    const data = isParents ? await getParentApps() : getTeacherApps();
     const teachersList = getTeacherApps(); // For matching dropdown
     
     container.innerHTML = `
@@ -68,45 +68,49 @@ export function renderAdminDashboard() {
                 </div>
               `;
 
+              const arrToLines = (arr) =>
+                Array.isArray(arr) && arr.length > 0
+                  ? arr.map(v => `• ${v}`).join('<br/>')
+                  : '-';
+              const goalsText = Array.isArray(item.goals)
+                ? arrToLines(item.goals)
+                : (item.learning_goal
+                    ? (Array.isArray(item.learning_goal) ? arrToLines(item.learning_goal) : item.learning_goal)
+                    : '-');
+              const timeblocksText = Array.isArray(item.time_blocks) && item.time_blocks.length > 0
+                ? arrToLines(item.time_blocks)
+                : '-';
+
               detailsHtml = `
                 <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
-                  <p><strong>거주지:</strong> ${item.country}</p>
-                  <p><strong>이메일:</strong> <a href="mailto:${item.email}" style="color:var(--primary);">${item.email}</a></p>
-                  <p><strong>자녀정보:</strong> ${item.child_name || '-'} (${item.child_age || '-'})</p>
-                  <p><strong>한글수준:</strong> ${item.korean_level}</p>
-                  <p><strong>수업목표:</strong> ${item.learning_goal}</p>
-                  ${item.available_days?.length > 0 ? (() => {
-                    const tzInfo = getTimezoneInfo(item.local_timezone || '');
-                    const slots  = convertToKST(item.available_days, item.available_times || [], item.local_timezone || '');
-                    const tzLabel = tzInfo
-                      ? `${tzInfo.city} (${tzInfo.abbr}, ${tzInfo.offsetStr})`
-                      : (item.local_timezone || '');
-                    const rows = slots.map(s => `
-                      <tr>
-                        <td style="padding:4px 8px 4px 0; font-size:13px; white-space:nowrap;">${s.local}</td>
-                        <td style="padding:4px 0 4px 12px; font-size:13px; white-space:nowrap; border-left:1px solid var(--border);">${s.kst} KST</td>
-                      </tr>
-                    `).join('');
-                    return `
-                      <div style="margin:8px 0;">
-                        <strong>희망 수업 시간</strong>
-                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${tzLabel}</div>
-                        <table style="border-collapse:collapse; margin-top:6px; width:100%;">
-                          <thead>
-                            <tr>
-                              <th style="padding:4px 8px 4px 0; font-size:11px; color:var(--text-muted); font-weight:600; text-align:left;">현지 시간</th>
-                              <th style="padding:4px 0 4px 12px; font-size:11px; color:var(--text-muted); font-weight:600; text-align:left; border-left:1px solid var(--border);">한국 시간 (KST)</th>
-                            </tr>
-                          </thead>
-                          <tbody>${rows}</tbody>
-                        </table>
-                      </div>
-                    `;
-                  })() : `<p><strong>희망시간:</strong> ${item.preferred_schedule || '이전 형식'}</p>`}
-                  ${item.note ? `<p style="margin-top:8px;"><strong>요청사항:</strong></p><div style="white-space: pre-wrap; background: var(--bg-color); padding: 8px; border-radius: 8px; margin-top:4px; font-size:13px;">${item.note}</div>` : ''}
-                  
+
+                  <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">연락처</p>
+                  <p><strong>거주지:</strong> ${item.country || '-'}${item.city && item.city !== item.country ? ' / ' + item.city : ''}</p>
+                  <p><strong>이메일:</strong> <a href="mailto:${item.email}" style="color:var(--primary);">${item.email || '-'}</a></p>
+                  <p><strong>자녀정보:</strong> ${item.child_name || '-'} (${item.child_age || '-'})${item.child_gender ? ' · ' + item.child_gender : ''}</p>
+                  ${item.referral_source ? `<p><strong>유입경로:</strong> ${item.referral_source}</p>` : ''}
+
+                  <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin:12px 0 6px; text-transform:uppercase;">아이 정보</p>
+                  ${item.home_language ? `<p><strong>가정 언어:</strong> ${item.home_language}</p>` : ''}
+                  ${item.parent_korean ? `<p><strong>부모 한국어:</strong> ${item.parent_korean}</p>` : ''}
+                  ${Array.isArray(item.personality) && item.personality.length > 0 ? `<p><strong>아이 성향:</strong><br/>${arrToLines(item.personality)}</p>` : ''}
+
+                  <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin:12px 0 6px; text-transform:uppercase;">한국어 실력</p>
+                  <p><strong>수준:</strong> ${item.korean_level || '-'}</p>
+                  ${item.korean_level_sub_answer ? `<p><strong>보조 답변:</strong> ${item.korean_level_sub_answer}</p>` : ''}
+                  ${Array.isArray(item.korean_exposure) && item.korean_exposure.length > 0 ? `<p><strong>노출 환경:</strong><br/>${arrToLines(item.korean_exposure)}</p>` : ''}
+
+                  <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin:12px 0 6px; text-transform:uppercase;">수업 목표</p>
+                  <p>${goalsText}</p>
+
+                  <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin:12px 0 6px; text-transform:uppercase;">수업 환경</p>
+                  <p><strong>희망 시간대:</strong><br/>${timeblocksText}</p>
+                  ${item.kst_summary ? `<p><strong>KST 기준:</strong> ${item.kst_summary}</p>` : ''}
+                  ${item.frequency ? `<p><strong>수업 빈도:</strong> ${item.frequency}</p>` : ''}
+                  ${Array.isArray(item.teacher_prefs) && item.teacher_prefs.length > 0 ? `<p><strong>선생님 선호:</strong><br/>${arrToLines(item.teacher_prefs)}</p>` : ''}
+
                   ${matchUI}
-                  
+
                   <div style="margin-top:16px;">
                     <label style="display:block; margin-bottom:4px; font-size:14px; font-weight:600;">운영자 메모</label>
                     <textarea id="memo-${item.id}" style="width:100%; min-height:60px; font-size:14px; padding:8px;">${item.admin_note || ''}</textarea>
@@ -167,57 +171,57 @@ export function renderAdminDashboard() {
     `;
 
     // Event Listeners
-    container.querySelector('#tab-parents').addEventListener('click', () => { currentTab = 'parents'; expandedId = null; render(); });
-    container.querySelector('#tab-teachers').addEventListener('click', () => { currentTab = 'teachers'; expandedId = null; render(); });
-    
+    container.querySelector('#tab-parents').addEventListener('click', async () => { currentTab = 'parents'; expandedId = null; await render(); });
+    container.querySelector('#tab-teachers').addEventListener('click', async () => { currentTab = 'teachers'; expandedId = null; await render(); });
+
     // Status Change
     container.querySelectorAll('.status-select').forEach(select => {
-      select.addEventListener('change', (e) => {
+      select.addEventListener('change', async (e) => {
         const newStatus = e.target.value;
         const id = e.target.dataset.id;
-        if (isParents) updateParentStatus(id, newStatus);
+        if (isParents) await updateParentStatus(id, newStatus);
         else updateTeacherStatus(id, newStatus);
-        render(); // re-render to update badges
+        await render();
       });
     });
 
     // Expand Card
     container.querySelectorAll('.list-item').forEach(card => {
-      card.addEventListener('click', (e) => {
+      card.addEventListener('click', async (e) => {
         const id = card.dataset.cardId;
         expandedId = expandedId === id ? null : id; // toggle
-        render();
+        await render();
       });
     });
 
     // Save Memo
     container.querySelectorAll('.btn-save-memo').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         const id = btn.dataset.id;
         const type = btn.dataset.type;
         const note = container.querySelector('#memo-' + id).value;
-        updateAdminNote(type, id, note);
+        await updateAdminNote(type, id, note);
         alert('메모가 저장되었습니다.');
       });
     });
 
     // Match Teacher
     container.querySelectorAll('.btn-match-save').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         const parentId = btn.dataset.id;
         const teacherId = container.querySelector('#match-select-' + parentId).value;
         if (teacherId) {
           saveMatchRecord(parentId, teacherId, '');
-          updateParentStatus(parentId, '매칭 완료');
+          await updateParentStatus(parentId, '매칭 완료');
           alert('선생님이 성공적으로 연결되었습니다.');
         } else {
           alert('선생님을 선택해주세요.');
         }
-        render();
+        await render();
       });
     });
   };
 
-  render();
+  render().catch(e => console.error('[admin] render failed:', e));
   return container;
 }
