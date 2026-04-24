@@ -3,10 +3,10 @@
    --color- prefix를 사용. 기존 변수는 그대로 유지.
 ─────────────────────────────────────────────────────────────────────────────── */
 :root {
-  /* 코랄: 선택 칩 border, 현재 스텝 인디케이터 */
-  --color-primary:       #D85A30;
-  --color-primary-light: #FAECE7;
-  --color-primary-dark:  #993C1D;
+  /* 테라코타: 선택 칩 border, 현재 스텝 인디케이터 */
+  --color-primary:       #D4622A;
+  --color-primary-light: #FAEDE6;
+  --color-primary-dark:  #b8521f;
 
   /* 틸: 완료 스텝 인디케이터, 섹션 뱃지 */
   --color-success:       #1D9E75;

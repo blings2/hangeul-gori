@@ -2,13 +2,26 @@
   --primary: #a3826a;     /* Warm elegant brown */
   --primary-dark: #826651;
   --secondary: #e6d8cf;   /* Light beige */
-  --bg-color: #fbf9f7;    /* Off-white warm background */
+  --bg-color: #F5F0E8;    /* 크림 베이지 */
   --surface: #ffffff;
-  --text-main: #4a3c31;
-  --text-muted: #8b796d;
+  --text-main: #4A3728;
+  --text-muted: #8B6E5A;
   --border: #f0e6df;
   --error: #d96c6c;
   --success: #67a281;
+
+  /* v2.0 브랜드 컬러 시스템 */
+  --color-impact: #D4622A;
+  --color-primary: #B89A6E;
+  --color-primary-light: #FAEDE6;
+  --color-primary-dark: #b8521f;
+  --color-text-brand: #4A3728;
+  --color-text-sub: #8B6E5A;
+  --color-gold: #D4B896;
+  --color-bg: #F5F0E8;
+  --color-surface: #EDE8DF;
+  --color-success: #1D9E75;
+  --color-success-light: #E1F5EE;
 
   --shadow-sm: 0 4px 16px rgba(163, 130, 106, 0.08);
   --shadow-md: 0 12px 32px rgba(163, 130, 106, 0.12);
@@ -381,7 +394,7 @@ textarea {
   font-size: 20px;
   font-weight: 500;
   text-align: center;
-  color: #3D2B1A;
+  color: #4A3728;
   margin-bottom: 1.5rem;
 }
 .pain-grid {
@@ -416,7 +429,7 @@ textarea {
   text-align: center;
   font-size: 14px;
   font-weight: 500;
-  color: var(--primary, #D85A30);
+  color: var(--color-impact, #D4622A);
 }
 
 /* ─── 캐러셀 공통 ─────────────────────────────────────────────────────────────── */
@@ -428,13 +441,13 @@ textarea {
   font-size: 18px;
   font-weight: 500;
   text-align: center;
-  color: #3D2B1A;
+  color: #4A3728;
   margin-bottom: 0.5rem;
   padding: 0 1rem;
 }
 .carousel-section-sub {
   font-size: 13px;
-  color: #9E9890;
+  color: #8B6E5A;
   text-align: center;
   margin-bottom: 1.75rem;
   padding: 0 1.5rem;
@@ -480,8 +493,8 @@ textarea {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--color-primary-light, #FAECE7);
-  color: var(--color-primary-dark, #993C1D);
+  background: var(--color-primary-light, #FAEDE6);
+  color: var(--color-primary-dark, #b8521f);
   font-size: 16px;
   font-weight: 500;
   display: flex;
@@ -534,7 +547,7 @@ textarea {
 .carousel-review-quote-mark {
   font-size: 32px;
   line-height: 1;
-  color: #FAECE7;
+  color: #FAEDE6;
   margin-bottom: 8px;
   font-family: Georgia, serif;
 }
@@ -607,7 +620,7 @@ textarea {
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  color: #3D2B1A;
+  color: #4A3728;
   margin-bottom: 0.5rem;
 }
 .pain-title::after {
@@ -615,12 +628,12 @@ textarea {
   display: block;
   width: 40px;
   height: 3px;
-  background: var(--color-primary, #D85A30);
+  background: var(--color-impact, #D4622A);
   border-radius: 2px;
   margin: 8px auto 1.5rem;
 }
 .pain-card {
-  border-left: 3px solid var(--color-primary, #D85A30);
+  border-left: 3px solid var(--color-impact, #D4622A);
   border-top: none;
   border-right: none;
   border-bottom: none;
@@ -631,7 +644,7 @@ textarea {
 .pain-footer {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-primary, #D85A30);
+  color: var(--color-impact, #D4622A);
   text-align: center;
   margin-top: 1.5rem;
 }
@@ -639,13 +652,13 @@ textarea {
 /* How It Works */
 .how-section {
   padding: 3rem 1.25rem;
-  background: #fff;
+  background: #F5F0E8;
 }
 .how-title {
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  color: #3D2B1A;
+  color: #4A3728;
   margin-bottom: 0.5rem;
 }
 .how-title::after {
@@ -675,7 +688,7 @@ textarea {
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  color: #3D2B1A;
+  color: #4A3728;
   margin-bottom: 0.5rem;
 }
 .why-title::after {

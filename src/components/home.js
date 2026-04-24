@@ -10,11 +10,11 @@ export function renderHome() {
       .logo { max-width: 120px; height: auto; margin: 0 auto 24px auto; display: block; }
       .hero-title { font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.5px; }
       .hero-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
-      .hero-sub2 { font-size: 12px; color: var(--primary); font-weight: 500; margin-bottom: 24px; }
+      .hero-sub2 { font-size: 12px; color: var(--color-impact, #D4622A); font-weight: 500; margin-bottom: 24px; }
       .hero-actions { display: flex; gap: 12px; flex-direction: row; justify-content: center; }
       .hero-actions .btn { flex: 1; padding: 14px 16px; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; text-decoration: none; text-align: center; transition: var(--transition); }
-      .hero-actions .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: var(--shadow-sm); }
-      .hero-actions .btn-secondary { background: var(--surface); color: var(--primary-dark); border: 1.5px solid var(--primary); }
+      .hero-actions .btn-primary { background: linear-gradient(135deg, var(--color-impact, #D4622A), var(--color-primary-dark, #b8521f)); color: white; box-shadow: var(--shadow-sm); }
+      .hero-actions .btn-secondary { background: var(--surface); color: var(--color-impact, #D4622A); border: 1.5px solid var(--color-impact, #D4622A); }
       
       /* Sections common */
       .section-container { padding: 32px 24px 0 24px; }
@@ -44,7 +44,7 @@ export function renderHome() {
       .teacher-header { display: flex; align-items: center; gap: 12px; }
       .teacher-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 20px; }
       .teacher-name { font-size: 15px; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 2px; }
-      .teacher-exp { font-size: 12px; color: var(--primary); font-weight: 600; }
+      .teacher-exp { font-size: 12px; color: var(--color-impact, #D4622A); font-weight: 600; }
       .teacher-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 4px 0; }
       .teacher-badges { display: flex; gap: 8px; flex-wrap: wrap; }
       .badge { background: var(--bg-color); padding: 4px 10px; border-radius: 12px; font-size: 11px; color: var(--text-muted); font-weight: 600; border: 1px solid var(--border); }
@@ -52,7 +52,7 @@ export function renderHome() {
       /* Final CTA */
       .final-cta { text-align: center; margin-top: 40px; padding: 32px 24px; }
       .final-cta h2 { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1.4; }
-      .final-btn { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 14px 32px; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: var(--shadow-sm); }
+      .final-btn { display: inline-block; background: linear-gradient(135deg, var(--color-impact, #D4622A), var(--color-primary-dark, #b8521f)); color: white; padding: 14px 32px; border-radius: var(--radius-sm); font-weight: 700; font-size: 14px; text-decoration: none; box-shadow: var(--shadow-sm); }
       
       /* Footer */
       .home-footer { padding: 20px 24px 40px; text-align: center; }
