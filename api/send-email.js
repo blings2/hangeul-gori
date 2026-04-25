@@ -96,21 +96,33 @@ export default async function handler(req, res) {
   const timeblocksText  = toLines(available_times, TIMEBLOCK_LABELS);
   const teacherText     = toLines(teacher_prefs);
 
-  const parentEmailText = `
-안녕하세요, ${parent_name}님 👋
+  const goalsForParent = Array.isArray(learning_goal) && learning_goal.length > 0
+    ? learning_goal.map(v => `  - ${GOAL_LABELS[v] || v}`).join('\n')
+    : '  -';
 
-${child_name}의 한글 수업 신청이 잘 접수되었어요.
+  const parentEmailText = `
+${child_name} 어린이의 한글 수업 신청이 잘 접수되었어요.
 담당자가 직접 검토한 후 2~3일 내로 이 이메일 주소로 연락드릴게요.
 
-── 신청 내용 요약 ──────────────────
-아이 이름:    ${child_name}
-나이:         ${child_age}
-한국어 수준:  ${korean_level}
-────────────────────────────────────
+——— 신청 내용 요약 ———————————————
+아이 이름:     ${child_name}
+나이:          ${child_age}
+한국어 수준:   ${LEVEL_LABELS[korean_level] || korean_level || '-'}
+수업 목표:
+${goalsForParent}
+거주 지역:     ${[country, city && city !== country ? city : ''].filter(Boolean).join(' ') || '-'}
+희망 시간:     ${kst_summary || '-'}
+수업 빈도:     ${frequency || '-'}
+─────────────────────────────────────
+
+다음 단계를 안내드릴게요:
+① 담당자가 신청 내용을 검토해요
+② 아이에게 맞는 선생님을 찾아드려요
+③ 매칭 결과를 이 이메일로 안내드려요
 
 궁금한 점이 있으시면 언제든지 회신해 주세요.
 
-한글고리 드림 🌱
+한글고리 드림 🌿
 `.trim();
 
   const adminEmailText = `
@@ -166,7 +178,7 @@ ${teacherText}
     resend.emails.send({
       from,
       to:      parentTo,
-      subject: `${child_name}의 선생님을 찾기 시작했어요`,
+      subject: `${child_name}의 한글 수업 신청이 접수되었어요 🌱`,
       text:    parentEmailText,
     }),
     adminTo
