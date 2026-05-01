@@ -62,6 +62,23 @@ export function renderAdminDashboard() {
     active:   '집중 시간이 짧은 편이에요',
   };
 
+  const TEACHER_TIMEBLOCK_LABELS = {
+    morning:   '오전 (09:00–12:00)',
+    afternoon: '오후 (13:00–18:00)',
+    evening:   '저녁 (19:00–22:00)',
+  };
+
+  const AGREE_LABELS = {
+    teaching_policy: '수업 운영 원칙',
+    payment_policy:  '결제 정책',
+    schedule_policy: '일정 변경 정책',
+    feedback_policy: '피드백 제출',
+    privacy_policy:  '아동 보호·개인정보',
+    marketing:       '마케팅 활용 (선택)',
+  };
+
+  const REQUIRED_AGREE_IDS = ['teaching_policy', 'payment_policy', 'schedule_policy', 'feedback_policy', 'privacy_policy'];
+
   // ── 헬퍼 ─────────────────────────────────────────────────────────────────────
 
   const lbl = (map, key) => (key ? (map[key] || key) : '-');
@@ -372,30 +389,125 @@ export function renderAdminDashboard() {
               detailsHtml = sec1 + sec2 + sec3 + sec4 + sec5 + sec6 + sec7 + sec8 + sec9;
 
             } else {
-              // ── 선생님 탭: 기존 렌더링 유지 ─────────────────────────────────
-              detailsHtml = `
-                <div style="margin-top:16px;padding-top:16px;border-top:1px dashed var(--border);">
-                  <p><strong>거주지:</strong> ${item.country}</p>
-                  <p><strong>이메일:</strong> <a href="mailto:${item.email}" style="color:var(--primary);">${item.email}</a></p>
-                  <p><strong>가능연령:</strong> ${item.age_group}</p>
-                  <p><strong>수업수준:</strong> ${item.teaching_level}</p>
-                  <p><strong>가능시간:</strong> ${item.availability}</p>
-                  <p><strong>시범수업 가능:</strong> ${item.trial_available ? '✅ 예' : '❌ 아니오'} | <strong>유아수업 경험:</strong> ${item.early_childhood_experience ? '✅ 예' : '❌ 아니오'}</p>
-                  <div style="margin-top:8px;">
-                    <strong>소개:</strong>
-                    <div style="white-space:pre-wrap;background:var(--bg-color);padding:8px;border-radius:8px;margin-top:4px;font-size:13px;">${item.bio}</div>
-                  </div>
-                  <div style="margin-top:8px;">
-                    <strong>경력:</strong>
-                    <div style="white-space:pre-wrap;background:var(--bg-color);padding:8px;border-radius:8px;margin-top:4px;font-size:13px;">${item.experience}</div>
-                  </div>
-                  <div style="margin-top:16px;">
-                    <label style="display:block;margin-bottom:4px;font-size:14px;font-weight:600;">운영자 메모</label>
-                    <textarea id="memo-${item.id}" style="width:100%;min-height:60px;font-size:14px;padding:8px;">${item.admin_note || ''}</textarea>
-                    <button class="btn-submit btn-save-memo" data-id="${item.id}" data-type="teacher" style="margin-top:8px;padding:8px 16px;width:100%;">메모 저장</button>
+              // ── 선생님 탭: 리뉴얼 렌더링 ────────────────────────────────────
+
+              const tTag = (arr) => {
+                if (!Array.isArray(arr) || arr.length === 0)
+                  return '<span style="color:var(--color-text-sub,#8B6E5A);font-size:12px;">-</span>';
+                return arr.map(v => `<span class="adm-tag">${v}</span>`).join('');
+              };
+              const tTagMapped = (arr, map) => {
+                if (!Array.isArray(arr) || arr.length === 0)
+                  return '<span style="color:var(--color-text-sub,#8B6E5A);font-size:12px;">-</span>';
+                return arr.map(v => `<span class="adm-tag">${map[v] || v}</span>`).join('');
+              };
+
+              // ── 섹션 1: 기본 정보 ──────────────────────────────────────────
+              const tsec1 = `
+                <div class="adm-section">
+                  <div class="adm-section-title">📋 기본 정보</div>
+                  <div class="adm-grid2">
+                    <div><div class="adm-cell-label">거주지</div><div class="adm-cell-value">${item.country || '-'}</div></div>
+                    <div><div class="adm-cell-label">이메일</div><div class="adm-cell-value"><a href="mailto:${item.email}" style="color:var(--color-impact,#D4622A);word-break:break-all;font-size:12px;">${item.email || '-'}</a></div></div>
+                    ${item.kakao_id ? `<div style="grid-column:1/-1;"><div class="adm-cell-label">카카오톡 ID</div><div class="adm-cell-value">${item.kakao_id}</div></div>` : ''}
                   </div>
                 </div>
               `;
+
+              // ── 섹션 2: 수업 전문성 ────────────────────────────────────────
+              const ageDisplay = Array.isArray(item.age_groups) && item.age_groups.length > 0
+                ? tTag(item.age_groups)
+                : (item.age_group ? `<span class="adm-tag">${item.age_group}</span>` : '<span style="color:var(--color-text-sub,#8B6E5A);font-size:12px;">-</span>');
+              const levelDisplay = Array.isArray(item.teaching_levels) && item.teaching_levels.length > 0
+                ? tTag(item.teaching_levels)
+                : (item.teaching_level ? `<span class="adm-tag">${item.teaching_level}</span>` : '<span style="color:var(--color-text-sub,#8B6E5A);font-size:12px;">-</span>');
+              const tsec2 = `
+                <div class="adm-section">
+                  <div class="adm-section-title">📚 수업 전문성</div>
+                  <div style="margin-bottom:8px;">
+                    <div class="adm-cell-label" style="margin-bottom:4px;">가능 연령대</div>
+                    <div>${ageDisplay}</div>
+                  </div>
+                  <div style="margin-bottom:10px;">
+                    <div class="adm-cell-label" style="margin-bottom:4px;">수업 수준</div>
+                    <div>${levelDisplay}</div>
+                  </div>
+                  ${item.bio ? `<div style="margin-bottom:8px;"><div class="adm-cell-label" style="margin-bottom:4px;">소개</div><div style="font-size:13px;color:var(--color-text-brand,#4A3728);line-height:1.6;white-space:pre-wrap;background:var(--bg-color);padding:10px 12px;border-radius:8px;">${item.bio}</div></div>` : ''}
+                  ${item.experience ? `<div><div class="adm-cell-label" style="margin-bottom:4px;">경력</div><div style="font-size:13px;color:var(--color-text-brand,#4A3728);line-height:1.6;white-space:pre-wrap;background:var(--bg-color);padding:10px 12px;border-radius:8px;">${item.experience}</div></div>` : ''}
+                </div>
+              `;
+
+              // ── 섹션 3: 수업 가능 시간 ────────────────────────────────────
+              const daysDisplay = Array.isArray(item.available_days) && item.available_days.length > 0
+                ? tTag(item.available_days)
+                : (item.availability ? `<span class="adm-tag">${item.availability}</span>` : '<span style="color:var(--color-text-sub,#8B6E5A);font-size:12px;">-</span>');
+              const tsec3 = `
+                <div class="adm-section">
+                  <div class="adm-section-title">⏰ 수업 가능 시간</div>
+                  <div class="adm-grid2" style="margin-bottom:8px;">
+                    <div>
+                      <div class="adm-cell-label">가능 요일</div>
+                      <div style="margin-top:4px;">${daysDisplay}</div>
+                    </div>
+                    <div>
+                      <div class="adm-cell-label">주당 수업 수</div>
+                      <div class="adm-cell-value">${item.weekly_capacity || '-'}</div>
+                    </div>
+                  </div>
+                  <div class="adm-cell-label" style="margin-bottom:4px;">시간대</div>
+                  <div>${tTagMapped(item.time_blocks, TEACHER_TIMEBLOCK_LABELS)}</div>
+                </div>
+              `;
+
+              // ── 섹션 4: 추가 옵션 ─────────────────────────────────────────
+              const optItems = [
+                { key: 'trial_available',            label: '시범 수업 가능' },
+                { key: 'early_childhood_experience', label: '유아 수업 경험' },
+                { key: 'return_student_experience',  label: '귀국 학생 경험' },
+                { key: 'english_available',          label: '영어 설명 가능' },
+              ].filter(o => item[o.key]);
+              const tsec4 = optItems.length > 0 ? `
+                <div class="adm-section">
+                  <div class="adm-section-title">✅ 추가 옵션</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    ${optItems.map(o => `<span class="adm-tag">✓ ${o.label}</span>`).join('')}
+                  </div>
+                </div>
+              ` : '';
+
+              // ── 섹션 5: 동의서 체결 현황 ──────────────────────────────────
+              let tsec5 = '';
+              if (item.agreements && typeof item.agreements === 'object') {
+                const allRequired = REQUIRED_AGREE_IDS.every(id => item.agreements[id]);
+                const badge = allRequired
+                  ? `<span style="display:inline-block;background:#E1F5EE;color:#0F6E56;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin-bottom:10px;">동의서 완료</span>`
+                  : `<span style="display:inline-block;background:#FAEDE6;color:#8c3d16;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;margin-bottom:10px;">동의서 미완료</span>`;
+                const agreeRows = Object.entries(AGREE_LABELS).map(([id, label]) => {
+                  const checked = !!item.agreements[id];
+                  return `<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:4px;">
+                    <span style="color:${checked ? '#1D9E75' : '#C0B8B0'};font-weight:700;">${checked ? '✓' : '—'}</span>
+                    <span style="color:${checked ? 'var(--color-text-brand,#4A3728)' : 'var(--color-text-sub,#8B6E5A)'};">${label}</span>
+                  </div>`;
+                }).join('');
+                tsec5 = `
+                  <div class="adm-section">
+                    <div class="adm-section-title">📋 동의서 체결 현황</div>
+                    ${badge}
+                    ${agreeRows}
+                  </div>
+                `;
+              }
+
+              // ── 섹션 6: 운영자 메모 (기존 유지) ───────────────────────────
+              const tsec6 = `
+                <div class="adm-section">
+                  <div class="adm-section-title">📝 운영자 메모</div>
+                  <textarea id="memo-${item.id}" style="width:100%;min-height:60px;font-size:14px;padding:8px;border:1px solid var(--border);border-radius:8px;font-family:var(--font-kr);">${item.admin_note || ''}</textarea>
+                  <button class="btn-submit btn-save-memo" data-id="${item.id}" data-type="teacher" style="margin-top:8px;padding:8px 16px;width:100%;">메모 저장</button>
+                </div>
+              `;
+
+              detailsHtml = tsec1 + tsec2 + tsec3 + tsec4 + tsec5 + tsec6;
             }
           }
 
@@ -423,20 +535,20 @@ export function renderAdminDashboard() {
             `;
           } else {
             return `
-              <div class="list-item" style="padding:16px;cursor:pointer;border-color:${isExpanded ? 'var(--primary-dark)' : 'var(--border)'};" data-card-id="${item.id}">
-                <div class="list-item-header" style="margin-bottom:${isExpanded ? '12px' : '0'};border-bottom:none;padding-bottom:0;">
+              <div class="adm-card ${isExpanded ? 'expanded' : ''}" data-card-id="${item.id}">
+                <div class="adm-card-header">
                   <div>
-                    <div class="list-item-title">${item.name} (선생님)</div>
-                    <div class="list-item-date">접수일: ${dateOnly}</div>
+                    <div class="adm-card-name">${item.name || '-'} <span style="font-size:12px;font-weight:400;color:var(--color-text-sub,#8B6E5A);">(선생님)</span></div>
+                    <div class="adm-card-date">${dateOnly}</div>
                   </div>
-                  <select class="status-select status-badge ${statusClass}" data-id="${item.id}" style="border:none;outline:none;font-weight:bold;cursor:pointer;" onclick="event.stopPropagation()">
+                  <select class="status-select adm-status-select ${statusClass}" data-id="${item.id}" onclick="event.stopPropagation()">
                     ${statusOptionsHtml}
                   </select>
                 </div>
-                <div class="list-item-details" onclick="event.stopPropagation()">
+                <div onclick="event.stopPropagation()">
                   ${detailsHtml}
                 </div>
-                ${!isExpanded ? '<div style="text-align:center;margin-top:8px;color:var(--text-muted);font-size:12px;">클릭하여 자세히 보기</div>' : ''}
+                ${!isExpanded ? '<div class="adm-card-hint">클릭하여 자세히 보기</div>' : ''}
               </div>
             `;
           }

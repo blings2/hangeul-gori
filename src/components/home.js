@@ -7,7 +7,7 @@ export function renderHome() {
       
       /* Header & Hero */
       .home-header { padding: 40px 24px 32px; background: var(--surface); text-align: center; border-bottom: 1px solid var(--border); }
-      .logo { max-width: 120px; height: auto; margin: 0 auto 24px auto; display: block; }
+      .logo { max-width: 300px; height: auto; margin: 0 auto 24px auto; display: block; }
       .hero-title { font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.5px; }
       .hero-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
       .hero-sub2 { font-size: 12px; color: var(--color-impact, #D4622A); font-weight: 500; margin-bottom: 24px; }
